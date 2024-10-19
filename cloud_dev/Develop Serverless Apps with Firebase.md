@@ -1,18 +1,57 @@
-export REGION=
+# Develp Serverless Apps with Fire base: Challenge lab
+
+## Challenge
+
+- Create a frontedn solution using a Rest API and Firestore database
+
+## Definitions
+
+**Rest API**: Representation State Transfer Application Programming Interface. Think of it like a waiter taking order to the kitchnen and bringing back the plate. It defines a set of rules and conventions for how your applications can interact with each other over HTTP.
+
+**Firestore**: NoSQL document database that is part of Firebase platform. 
+
+**Firebase**: platform developed by Google for building web and mobile applications.
+
+## Preliminary
+
+Link the project:
+
+```yaml
+gcloud config set project $(gcloud projects list --format='value(PROJECT_ID)' --filter='qwiklabs-gcp')
+```
+Clone the repo:
+```yaml
+git clone https://github.com/rosera/pet-theory.git
+```
+
+## Task1: Create a Firestore database
+
+There are two ways to create a Firestore database:
+1. **Using the GCP console:** Navigate to the Firestore section and create a Database
+2. **Using CLI:** Utilize the command-line interface to create the databasae
+
+This guide will focus on the second approach, using the Firebase CLI.
+
+First setup some environment variables for later use:
+
+```yaml
+export REGION=[REGION]]
 export SERVICE_NAME=netflix-dataset-service
 export FRONTEND_STAGING_SERVICE_NAME=frontend-staging-service
 export FRONTEND_PRODUCTION_SERVICE_NAME=frontend-production-service
+```
 
+Enable the Cloud Run API. This is necessary to deploy and manage Cloud Run Services (necessary?)
 
-gcloud config set project $(gcloud projects list --format='value(PROJECT_ID)' --filter='qwiklabs-gcp')
-
+```yaml
 gcloud services enable run.googleapis.com
+```
 
+Create a Firestore database
+
+```yaml
 gcloud firestore databases create --location=$REGION
-
-
-# Clone the pet-theory repository from GitHub.
-git clone https://github.com/rosera/pet-theory.git
+```
 
 # Navigate to the firebase-import-csv/solution directory.
 cd pet-theory/lab06/firebase-import-csv/solution
@@ -71,3 +110,6 @@ gcloud beta run deploy $FRONTEND_PRODUCTION_SERVICE_NAME --image gcr.io/$GOOGLE_
 
 # source
 # Develop Serverless Apps with Firebase: Challenge Lab
+
+# interesting souce in term of presentation:
+# Deploy to Kubernetes in Google Cloud: Challenge Lab.md
