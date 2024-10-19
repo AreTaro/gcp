@@ -1,4 +1,4 @@
 # GCP
 
-code for lab
+These are notes taken during the labs of Google Cloud Skills Boost.
 

@@ -1,30 +1,48 @@
-# Develp Serverless Apps with Fire base: Challenge lab
+# Develop Serverless Apps with Firebase
 
-## Challenge
+## Objective
 
-- Create a frontedn solution using a Rest API and Firestore database
+- Create a frontend solution using a Rest API and Firestore database based on [pet-theory](https://github.com/rosera/pet-theory/tree/main) repository.
 
 ## Definitions
 
-**Rest API**: Representation State Transfer Application Programming Interface. Think of it like a waiter taking order to the kitchnen and bringing back the plate. It defines a set of rules and conventions for how your applications can interact with each other over HTTP.
+**REST API**: Representation State Transfer Application Programming Interface . Think of it like a waiter taking order to the kitchen and bringing back the plate. It defines a set of rules and conventions for how your applications can interact with each other over HTTP.
 
 **Firestore**: NoSQL document database that is part of Firebase platform. 
 
-**Firebase**: platform developed by Google for building web and mobile applications.
+**Firebase**: Platform developed by Google for building web and mobile applications.
+
+**Node Package Manager (npm):** A vast online repository of JavaScript packages.
 
 ## Preliminary
 
 Link the project:
 
-```yaml
+```bash
 gcloud config set project $(gcloud projects list --format='value(PROJECT_ID)' --filter='qwiklabs-gcp')
 ```
+
+_Break down_
+
+1. `gcloud projects list --format='value(PROJECT_ID)`: This portion of the command lists all of your Google Cloud projects, filters them to include only those with 'qwiklabs-gcp' in their name or description, and extract the project ID of the first matching project. The `--format='value(PROJECT_ID) part ensures only the project ID is returned.
+2. `gcloud config set project`: This portion of the command uses the project ID that was found in the first part to set the active project in gcloud configuration.
+
+
 Clone the repo:
-```yaml
+```bash
 git clone https://github.com/rosera/pet-theory.git
 ```
 
-## Task1: Create a Firestore database
+Setup some environment variables for later use:
+
+```bash
+export REGION=[REGION]]
+export SERVICE_NAME=netflix-dataset-service
+export FRONTEND_STAGING_SERVICE_NAME=frontend-staging-service
+export FRONTEND_PRODUCTION_SERVICE_NAME=frontend-production-service
+```
+
+## Create a Firestore database
 
 There are two ways to create a Firestore database:
 1. **Using the GCP console:** Navigate to the Firestore section and create a Database
@@ -32,60 +50,119 @@ There are two ways to create a Firestore database:
 
 This guide will focus on the second approach, using the Firebase CLI.
 
-First setup some environment variables for later use:
+Enable the Cloud Run API. This is necessary to deploy and manage Cloud Run Services.
 
-```yaml
-export REGION=[REGION]]
-export SERVICE_NAME=netflix-dataset-service
-export FRONTEND_STAGING_SERVICE_NAME=frontend-staging-service
-export FRONTEND_PRODUCTION_SERVICE_NAME=frontend-production-service
-```
-
-Enable the Cloud Run API. This is necessary to deploy and manage Cloud Run Services (necessary?)
-
-```yaml
+```bash
 gcloud services enable run.googleapis.com
 ```
 
 Create a Firestore database
 
-```yaml
+```bash
 gcloud firestore databases create --location=$REGION
 ```
 
-# Navigate to the firebase-import-csv/solution directory.
+## Populate the database
+
+Navigate to the firebase-import-csv/solution directory.
+
+```bash
 cd pet-theory/lab06/firebase-import-csv/solution
+```
 
-# Install the project dependencies.
+Install Node Package Manager (npm).
+
+```bash
 npm install
+```
 
-# Run the index.js script with the netflix_titles_original.csv file as an argument.
+Execute JavaScript code (index.js) to import CSV data into Firestore.
+
+```bash
 node index.js netflix_titles_original.csv
+```
+In essence, the index.js file is designed to:
+1. Read data from a CSV file.
+2. Parse taht data into individual records.
+3. Connect to a Firestore database.
+4. Write those records to the database using batches for efficiency.
+5. Log any errors or successes that occur during the process to Google Cloud Logging.
 
+# Create REST API
 
-# Suggested code may be subject to a license. Learn more: ~LicenseLog:3096388224.
-# https://github.com/drpcc/Labs_solutions.git
-# Suggested code may be subject to a license. Learn more: ~LicenseLog:4228235296.
-# https://github.com/Aditya2086/Google-Cloud-Skills-Boost.git
+> Access to `pet-theory/lab06/firebase-rest-api/solution-01`
 
-# Deploy the first version of the REST API
-cd ~/pet-theory/lab06/firebase-rest-api/solution-01  # Navigate to the first solution directory
-npm install                                      # Install dependencies for the REST API
-gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1  # Build and tag the Docker image for the REST API
-gcloud beta run deploy $SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1 --allow-unauthenticated --region=$REGION  # Deploy the REST API to Cloud Run
+```bash
+cd ~/pet-theory/lab06/firebase-rest-api/solution-01
+```
 
-# Deploy the second version of the REST API
-cd ~/pet-theory/lab06/firebase-rest-api/solution-02  # Navigate to the second solution directory
-npm install                                      # Install dependencies for the REST API
-gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.2  # Build and tag the Docker image for the REST API
-gcloud beta run deploy $SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.2 --allow-unauthenticated --region=$REGION  # Deploy the REST API to Cloud Run, overriding the previous version
+> Install Node Package Manager. 
 
+```bash
+npm install
+```
+It's always a good practice to run "npm install" in each project directory to ensure that you have the correct dependencies installed for that specific project. This helps avoid unexpected errors and ensure consistent behavior.
 
-# Get the URL of the deployed REST API service
+> Build and Deploy the code to Google Container Registry
+
+```bash
+gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1
+```
+
+The command `gcloud builds submit` is used to build a Docker image and push it to the Google Container Registry (GCR). It works by looking for `Dockerfile` in the current directory or a specified directory.
+
+The `Docker file` is a text file that contains instructions for building a Docker image. It specifies the base image, dependencies, application code, and other configurations needed to create the image.
+
+**Dockerfile**
+```dockerfile
+FROM node:12-slim
+WORKDIR /usr/src/app
+COPY package.json package*.json ./
+RUN npm install --only=production
+COPY . .
+CMD [ "npm", "start" ]
+```
+For more details, please refer to the git repository.
+
+> Deploy the image as a Cloud Run service.
+
+```bash
+gcloud beta run deploy $SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1 --allow-unauthenticated --region=$REGION
+```
+
+This command deploys a container image as a new service to Cloud Run. `--image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1` specifies the Docker image to use for the service. `gcr.io` is the domain for Google Container Registry, where the image is stored, `rest-api` is the name of the image, `0.1` is the tag or version of the image. `--allow-unauthenticated` makes the service publicly accessible. Without it, users would need to be authentificated to access Cloud Run service.
+
+To get the copy of the deployed service URL, two solutions:
+1. **Use the console:** Go to Cloud Run in the GCP console, click the service name and copy the url from the service name.
+2. **Use CLI:** Use the following command to get the URL of the deployed service: `gcloud run services describe $SERVICE_NAME --platform=managed --region=$REGION --format="value(status.url)"`
+
+```bash
 SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform=managed --region=$REGION --format="value(status.url)")
+```
 
-# Test the REST API by making a GET request
+> Test the REST API by making a GET request.
+
+```bash
+curl -X GET $SERVICE_URL
+```
+
+# Deploy an updated revision of the code to access the Firestore DB
+
+Access to `pet-theory/lab06/firebase-rest-api/solution-02` and do the same as in `solution-01` with the container image `gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.2`
+
+```bash
+cd ~/pet-theory/lab06/firebase-rest-api/solution-02
+npm install                                      
+gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.2  
+gcloud beta run deploy $SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.2 --allow-unauthenticated --region=$REGION
+```
+
+Get the copy of the service URL and test the REST API by making a GET request.
+
+```bash
+SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform=managed --region=$REGION --format="value(status.url)")
 curl -X GET $SERVICE_URL/2019
+```
 
 # Update the frontend to use the deployed REST API
 cd ~/pet-theory/lab06/firebase-frontend/public  # Navigate to the frontend's public directory
@@ -113,3 +190,5 @@ gcloud beta run deploy $FRONTEND_PRODUCTION_SERVICE_NAME --image gcr.io/$GOOGLE_
 
 # interesting souce in term of presentation:
 # Deploy to Kubernetes in Google Cloud: Challenge Lab.md
+# https://github.com/drpcc/Labs_solutions.git
+# https://github.com/Aditya2086/Google-Cloud-Skills-Boost.git
