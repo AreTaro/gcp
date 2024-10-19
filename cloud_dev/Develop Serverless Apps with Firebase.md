@@ -50,13 +50,14 @@ There are two ways to create a Firestore database:
 
 This guide will focus on the second approach, using the Firebase CLI.
 
-Enable the Cloud Run API. This is necessary to deploy and manage Cloud Run Services.
+### Enable the Cloud Run API. 
+This is necessary to deploy and manage Cloud Run Services.
 
 ```bash
 gcloud services enable run.googleapis.com
 ```
 
-Create a Firestore database
+### Create a Firestore database
 
 ```bash
 gcloud firestore databases create --location=$REGION
@@ -64,19 +65,19 @@ gcloud firestore databases create --location=$REGION
 
 ## Populate the database
 
-Navigate to the firebase-import-csv/solution directory.
+### Navigate to the firebase-import-csv/solution directory.
 
 ```bash
 cd pet-theory/lab06/firebase-import-csv/solution
 ```
 
-Install Node Package Manager (npm).
+### Install Node Package Manager (npm).
 
 ```bash
 npm install
 ```
 
-Execute JavaScript code (index.js) to import CSV data into Firestore.
+### Execute JavaScript code (index.js) to import CSV data into Firestore.
 
 ```bash
 node index.js netflix_titles_original.csv
@@ -88,22 +89,22 @@ In essence, the index.js file is designed to:
 4. Write those records to the database using batches for efficiency.
 5. Log any errors or successes that occur during the process to Google Cloud Logging.
 
-# Create REST API
+## Create REST API
 
-> Access to `pet-theory/lab06/firebase-rest-api/solution-01`
+### Access to `pet-theory/lab06/firebase-rest-api/solution-01`
 
 ```bash
 cd ~/pet-theory/lab06/firebase-rest-api/solution-01
 ```
 
-> Install Node Package Manager. 
+### Install Node Package Manager. 
 
 ```bash
 npm install
 ```
 It's always a good practice to run "npm install" in each project directory to ensure that you have the correct dependencies installed for that specific project. This helps avoid unexpected errors and ensure consistent behavior.
 
-> Build and Deploy the code to Google Container Registry
+### Build and Deploy the code to Google Container Registry
 
 ```bash
 gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1
@@ -124,7 +125,7 @@ CMD [ "npm", "start" ]
 ```
 For more details, please refer to the git repository.
 
-> Deploy the image as a Cloud Run service.
+### Deploy the image as a Cloud Run service.
 
 ```bash
 gcloud beta run deploy $SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1 --allow-unauthenticated --region=$REGION
@@ -140,13 +141,13 @@ To get the copy of the deployed service URL, two solutions:
 SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform=managed --region=$REGION --format="value(status.url)")
 ```
 
-> Test the REST API by making a GET request.
+### Test the REST API by making a GET request.
 
 ```bash
 curl -X GET $SERVICE_URL
 ```
 
-# Deploy an updated revision of the code to access the Firestore DB
+## Deploy an updated revision of the code to access the Firestore DB
 
 Access to `pet-theory/lab06/firebase-rest-api/solution-02` and do the same as in `solution-01` with the container image `gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.2`
 
@@ -164,31 +165,29 @@ SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform=managed --re
 curl -X GET $SERVICE_URL/2019
 ```
 
-# Update the frontend to use the deployed REST API
+## Update the frontend to use the deployed REST API
 cd ~/pet-theory/lab06/firebase-frontend/public  # Navigate to the frontend's public directory
 
-# Comment out the existing REST_API_SERVICE definition in app.js
+### Comment out the existing REST_API_SERVICE definition in app.js
 sed -i 's/^const REST_API_SERVICE = "data\/netflix\.json"/\/\/ const REST_API_SERVICE = "data\/netflix.json"/' app.js
 
-# Add a new REST_API_SERVICE definition pointing to the deployed service
+### Add a new REST_API_SERVICE definition pointing to the deployed service
 sed -i "1i const
  REST_API_SERVICE = \"$SERVICE_URL/2020\"" app.js
 
 
-# Build and deploy the frontend
+### Build and deploy the frontend
 npm install                                     # Install frontend dependencies
 cd ~/pet-theory/lab06/firebase-frontend         # Navigate to the frontend directory
 gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1  # Build and tag the Docker image for the staging frontend
 gcloud beta run deploy $FRONTEND_STAGING_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1 --region=$REGION --quiet  # Deploy the staging frontend to Cloud Run
 
-# Build and deploy the production frontend
+### Build and deploy the production frontend
 gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-production:0.1  # Build and tag the Docker image for the production frontend
 gcloud beta run deploy $FRONTEND_PRODUCTION_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-production:0.1 --region=$REGION --quiet  # Deploy the production frontend to Cloud Run
 
-# source
+## source
 # Develop Serverless Apps with Firebase: Challenge Lab
-
-# interesting souce in term of presentation:
 # Deploy to Kubernetes in Google Cloud: Challenge Lab.md
 # https://github.com/drpcc/Labs_solutions.git
 # https://github.com/Aditya2086/Google-Cloud-Skills-Boost.git
