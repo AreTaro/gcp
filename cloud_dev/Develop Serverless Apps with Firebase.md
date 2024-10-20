@@ -165,26 +165,55 @@ SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform=managed --re
 curl -X GET $SERVICE_URL/2019
 ```
 
-## Update the frontend to use the deployed REST API
-cd ~/pet-theory/lab06/firebase-frontend/public  # Navigate to the frontend's public directory
+## Deploy the Production Frontend
+Update the Staging Frontend to use the Firestore database.
+*Mettre à jour le Frontend (interface de l'utilisateur) de préproduction pour utiliser la base de données Firestore*
 
-### Comment out the existing REST_API_SERVICE definition in app.js
+### Access `pet-theory/lab06/firebase-frontend/public`
+```bash
+cd ~/pet-theory/lab06/firebase-frontend/public
+```
+
+### Update the frontend application to use the REST API.
+<!-- Suggested code may be subject to a license. Learn more: ~LicenseLog:1723497486. -->
+```bash
 sed -i 's/^const REST_API_SERVICE = "data\/netflix\.json"/\/\/ const REST_API_SERVICE = "data\/netflix.json"/' app.js
+```
+This commands finds the line in the app.js file that defines the `REST_API_SERVICE` constant with a value of `"data/netflix.json"` and commments out that line by adding `//` at the beginning. [It may have better solution]
 
-### Add a new REST_API_SERVICE definition pointing to the deployed service
-sed -i "1i const
- REST_API_SERVICE = \"$SERVICE_URL/2020\"" app.js
+*Breakdowm:*
+- `sed`: This command stands for "stream editor". 
+- `-i`: This flag indicates to make the change directly to the original file. 
+- `s/old/new/`: This is the substitution command fromat for `sed`. It tells `sed` to replace the string "old" with the string "new".
+- `app.js`: This is the target file where the changes will be applied.
 
+### Append the year to the SERVICE_URL
+```bash
+sed -i "1i const REST_API_SERVICE = \"$SERVICE_URL/2020\"" app.js
+ ```
+This command inserts the following line of JavaScript code at the very beginning (line 1) of the `app.js` file:
+```javascript
+const REST_API_SERVICE = "[SERVICE_URL]/2020"
+```
+*Breakdown*:
+- `1` specifies the line number where the insertion should occur.
+- `i` signifies the "insert" command, telling `sed` to add the following text before the specified line.
+- For other explanations, please refer to the previous paragraph.
 
-### Build and deploy the frontend
-npm install                                     # Install frontend dependencies
-cd ~/pet-theory/lab06/firebase-frontend         # Navigate to the frontend directory
-gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1  # Build and tag the Docker image for the staging frontend
-gcloud beta run deploy $FRONTEND_STAGING_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1 --region=$REGION --quiet  # Deploy the staging frontend to Cloud Run
+### Use Cloud Build to tag and deploy image revision to Container Registry
+```bash
+npm install                                     
+cd ~/pet-theory/lab06/firebase-frontend         
+gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1
+gcloud beta run deploy $FRONTEND_STAGING_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1 --region=$REGION --quiet
+```
 
-### Build and deploy the production frontend
-gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-production:0.1  # Build and tag the Docker image for the production frontend
+## Deploy the production frontend
+```bash
+cd ~/pet-theory/lab06/firebase-frontend/public
+gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-production:0.1 
 gcloud beta run deploy $FRONTEND_PRODUCTION_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-production:0.1 --region=$REGION --quiet  # Deploy the production frontend to Cloud Run
+```
 
 ## source
 # Develop Serverless Apps with Firebase: Challenge Lab
