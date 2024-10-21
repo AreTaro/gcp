@@ -169,12 +169,22 @@ curl -X GET $SERVICE_URL/2019
 Update the Staging Frontend to use the Firestore database.
 *Mettre à jour le Frontend (interface de l'utilisateur) de préproduction pour utiliser la base de données Firestore*
 
-### Access `pet-theory/lab06/firebase-frontend/public`
+### Use Cloud Build to tag and deploy image revision to Container Registry
+```bash                                     
+cd ~/pet-theory/lab06/firebase-frontend
+npm install
+gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1
+gcloud beta run deploy $FRONTEND_STAGING_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1 --region=$REGION --quiet
+```
+
+### to be reviewed from here
+
+#### Access `pet-theory/lab06/firebase-frontend/public`
 ```bash
 cd ~/pet-theory/lab06/firebase-frontend/public
 ```
 
-### Update the frontend application to use the REST API.
+#### Update the frontend application to use the REST API.
 <!-- Suggested code may be subject to a license. Learn more: ~LicenseLog:1723497486. -->
 ```bash
 sed -i 's/^const REST_API_SERVICE = "data\/netflix\.json"/\/\/ const REST_API_SERVICE = "data\/netflix.json"/' app.js
@@ -187,7 +197,7 @@ This commands finds the line in the app.js file that defines the `REST_API_SERVI
 - `s/old/new/`: This is the substitution command fromat for `sed`. It tells `sed` to replace the string "old" with the string "new".
 - `app.js`: This is the target file where the changes will be applied.
 
-### Append the year to the SERVICE_URL
+#### Append the year to the SERVICE_URL
 ```bash
 sed -i "1i const REST_API_SERVICE = \"$SERVICE_URL/2020\"" app.js
  ```
@@ -200,7 +210,7 @@ const REST_API_SERVICE = "[SERVICE_URL]/2020"
 - `i` signifies the "insert" command, telling `sed` to add the following text before the specified line.
 - For other explanations, please refer to the previous paragraph.
 
-### Use Cloud Build to tag and deploy image revision to Container Registry
+#### Use Cloud Build to tag and deploy image revision to Container Registry
 ```bash
 npm install                                     
 cd ~/pet-theory/lab06/firebase-frontend         
@@ -208,12 +218,7 @@ gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1
 gcloud beta run deploy $FRONTEND_STAGING_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-staging:0.1 --region=$REGION --quiet
 ```
 
-## Deploy the production frontend
-```bash
-cd ~/pet-theory/lab06/firebase-frontend/public
-gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-production:0.1 
-gcloud beta run deploy $FRONTEND_PRODUCTION_SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/frontend-production:0.1 --region=$REGION --quiet  # Deploy the production frontend to Cloud Run
-```
+Error message when building a image from `cd ~/pet-theory/lab06/firebase-frontend` because there is no Dockefile in this folder.
 
 ## source
 # Develop Serverless Apps with Firebase: Challenge Lab
