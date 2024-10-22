@@ -4,6 +4,8 @@
 
 Install the CLI and run `gcloud auth login`.
 
+[Hugo Deploy](https://gohugo.io/hosting-and-deployment/hugo-deploy/)
+
 ### VM in Terraform code
 ```
 # This code is compatible with Terraform 4.25.0 and versions that are backwards compatible to 4.25.0.
