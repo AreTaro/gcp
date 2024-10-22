@@ -1,7 +1,10 @@
 # Deploy a Hugo Website with Cloud Build and Firebase Pipeline
 
+## Create a VM
 
-## VM in Terraform code
+Install the CLI and run `gcloud auth login`.
+
+### VM in Terraform code
 ```
 # This code is compatible with Terraform 4.25.0 and versions that are backwards compatible to 4.25.0.
 # For information about validating this Terraform code, see https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#format-and-validate-the-configuration
@@ -71,7 +74,7 @@ resource "google_compute_instance" "hugo-dev-vm-20241022-090138" {
 }
 ```
 
-## VM in command Line
+### VM in command Line
 ```
 gcloud compute instances create hugo-dev-vm-20241022-090138 \
     --project=qwiklabs-gcp-03-43a766dea013 \
@@ -95,7 +98,7 @@ Mandatory\ Prefix$'\n'echo\ \"STARTUP-SCRIPT\ START\"$'\n'sudo\ apt-get\ install
     --reservation-affinity=any
 ```
 
-## installhugo.sh
+### installhugo.sh
 ```
 _HUGO_VERSION=0.96.0
 curl -L https://github.com/gohugoio/hugo/releases/download/v${_HUGO_VERSION}/hugo_extended_${_HUGO_VERSION}_Linux-64bit.tar.gz | tar -xz -C /tmp/
