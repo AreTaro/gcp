@@ -1,0 +1,12 @@
+Let's try a new readme file using org mode
+
+* how does it looks like
+
+** in github
+
+** in idx
+
+* what is the best solution
+
+* conclusion
+
