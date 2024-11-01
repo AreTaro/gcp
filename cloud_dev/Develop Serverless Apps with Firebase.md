@@ -127,7 +127,7 @@ For more details, please refer to the git repository.
 
 ### Deploy the image as a Cloud Run service.
 
-```bash
+```
 gcloud beta run deploy $SERVICE_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1 --allow-unauthenticated --region=$REGION
 ```
 
