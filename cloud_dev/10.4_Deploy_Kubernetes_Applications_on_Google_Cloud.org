@@ -1,33 +1,30 @@
 * Objectives
-- Create a Docker image and store the Dockerfile
-- Test the created Docker image
-- Push Docker image into the Artifact Registry
-- Use the image to create and expose a deployment in Kubernetes
+    - Create a Docker image and store the Dockerfile
+    - Test the created Docker image
+    - Push Docker image into the Artifact Registry
+    - Use the image to create and expose a deployment in Kubernetes
 
 * Create a docker image and store the Dockerfile
   1. install the marking scripts
-   ```
+   #+begin_src 
    source <(gsutil cat
    gs://cloud-training/gsp318/marking/setup_marking_v2.sh)
-   ```
+   #+end_src
 
-  2. clone the `valkyrie-app` repository
-     ```
-     gcloud source repos clone valkyri-app
-     ```
+  2. Clone the `valkyrie-app` repository
+     ~gcloud source repos clone valkyrie-app~
 
-   3. Create a `valkyrie-app/Dockerfile`
-      ```
+  3. Create a `valkyrie-app/Dockerfile`
+      #+begin_src Dockerfile
       FROM golang:1.10
 	WORKDIR /go/src/app
 	COPY source .
 	RUN go install -v
 	ENTRYPOINT ["app","-single=true","-port=8080"]
-      ```
-   4. Create a Docker image
-      ```
-      docker build -t <image-name>:<tag>
-      ```
+      #+end_src
+
+  4. Create a Docker image
+     ~docker build -t <image-name>:<tag>~
 
 * Test docker image
 
@@ -45,11 +42,11 @@
 * Push the Docker image to Artifact Registry
 
   1. Create a repository
-     ```
+     #+begin_src 
      gcloud artifacts repositories create <REPO_NAME>
      --repository-format=docker --location=<LOCATION>
      --description="Docker repository"
-     ```
+     #+end_src
 
   2. Configure Docker to use Google Cloud CLI to authenticate requests
      to Artifacts Registry
@@ -59,10 +56,8 @@
 
   3. Re-tag the container
      (Do not understand why it is necessary to Re-tag)
-     ```
-     docker tag <IMAGE ID>
-     <REGION>-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT/<REPO_NAME>/<IMAGE_NAME>:<TAG>
-     ```
+     ~docker tag <IMAGE ID>
+     <REGION>-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT/<REPO_NAME>/<IMAGE_NAME>:<TAG>~
 
      To get <IMAGE_ID> run the command ~gcloud images~
 
@@ -77,8 +72,8 @@
     ~sed -i s#IMAGE_HERE#<REGION>-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT/<REPO>/<IMAGE>:<TAG>#g k8s/deployment.yaml~ 
 
   2. Get Credential and deploy
-     ```
-    gcloud container clusters get-credentials <CLUSTER> --zone <REGION>
-    kubectl create -f <PATH><FILE>.yaml
-    kubectl create -f <PATH><FILE>.yaml
-    ```
+     #+begin_src
+	gcloud container clusters get-credentials <CLUSTER> --zone <REGION>
+	kubectl create -f <PATH><FILE>.yaml
+	kubectl create -f <PATH><FILE>.yaml
+     #+end_src
