@@ -17,10 +17,10 @@
   3. Create a `valkyrie-app/Dockerfile`
       #+begin_src Dockerfile
       FROM golang:1.10
-	WORKDIR /go/src/app
-	COPY source .
-	RUN go install -v
-	ENTRYPOINT ["app","-single=true","-port=8080"]
+      WORKDIR /go/src/app
+      COPY source .
+      RUN go install -v
+      ENTRYPOINT ["app","-single=true","-port=8080"]
       #+end_src
 
   4. Create a Docker image

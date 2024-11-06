@@ -1,0 +1,50 @@
+* Architecture
+- Docs will be uploaded into a Cloud Storage Bucket
+- When uploaded, stream processing will be done by Cloud Pub/Sub
+- A Cloud Run service will be run to transform document into pdf
+- Document will be stored into an other Cloud Storage Bucket
+
+* Objectives
+- Convert a Node JS application to a container
+- Build containers with Google Cloud Build
+- Create a Cloud Run service that converts files to PDF files in the cloud.
+- Use event processing with Cloud Storage
+
+* Setup (optional)
+- set up a variable for the GOOGLE_CLOUD_PROJECT
+
+~export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)~
+
+* Enable the Cloud Run API
+
+~gcloud services enable run.googleapis.com~
+
+* Deploy a simple Cloud Run service
+
+1. Clone the Pet Theory repository
+
+~git clone https://github.com/rosera/pet-theory.git~
+
+2. go to lab03 folder
+~cd pet-theory/lab03~
+
+3. Edit ~package.json~ and add in the "scripts" section:
+#+begin_src json
+...
+
+"scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+
+...
+#+end_src
+
+4. Install the following packages
+#+begin_src
+npm install express
+npm install body-parser
+npm install child_process
+npm install @google-cloud/storage
+#+end_src
+
